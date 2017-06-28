@@ -368,9 +368,17 @@
    * but nothing beyond here is required.
    */
 
+
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    return _.map(collection, function(item) {
+      if (typeof functionOrKey === 'function') {
+        return functionOrKey.apply(item, args);
+      } else if (typeof functionOrKey === 'string') {
+        return item[functionOrKey]();
+      }
+    });
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -378,8 +386,63 @@
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
-  };
+    // if (typeof iterator === 'string') {
+    //   iterator = something[iterator];
+    // }
+    // if (typeof iterator === 'function') {
+    //   iterator = iterator
+    // } else if (typeof iterator === 'string') {
+    //    iterator = kdhjk[iterator];
+    // }
+    var result = [];
+    var arrUndefined = [];
 
+    _.each(collection, function(item) {
+      
+      if (typeof iterator === 'function' && iterator(item) === undefined) {
+        arrUndefined.push(item);
+      } else if (typeof iterator === 'string' && item === undefined) {
+        arrUndefined.push(item);
+      } else {
+        result.push(item);
+      }
+    });
+
+
+    var partition = function(arr, low, high) {
+      
+      var pivot = (typeof iterator === 'function') ? iterator(arr[high]) : arr[high][iterator];
+      var i = (low - 1);
+    
+      for (var j = low; j < high; j++) {
+        var val = (typeof iterator === 'function') ? iterator(arr[j]) : arr[j][iterator];
+        if (val <= pivot) {
+          ++i;
+          var temp = arr[i];
+          arr[i] = arr[j];
+          arr[j] = temp;
+        }
+      }
+    
+      var temp = arr[i + 1];
+      arr[i + 1] = arr[high];
+      arr[high] = temp;
+      return i + 1;
+    };
+
+    var sort = function(arr, low, high) {
+      if (low < high) {
+        var pi = partition(arr, low, high);
+
+        sort(arr, low, pi - 1);
+        sort(arr, pi + 1, high);
+      }
+    };
+    sort(result, 0, result.length - 1);
+
+    return result.concat(arrUndefined);
+    
+  }; 
   // Zip together two or more arrays with elements of the same index
   // going together.
   //
