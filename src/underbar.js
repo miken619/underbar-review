@@ -449,6 +449,23 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    var argslength = arguments.length;
+    var result = [];   
+    var maxLength = 0;
+
+    for (var i = 0; i < argslength; ++i) {
+      var temp = arguments[i].length;
+      maxLength = (temp > maxLength) ? temp : maxLength;
+    }
+    
+    for (var i = 0; i < maxLength; ++i) {
+      var temp = [];
+      for (var j = 0; j < argslength; ++j) {
+        temp.push(arguments[j][i]);
+      }
+      result.push(temp);
+    }
+    return result;
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -456,6 +473,33 @@
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    // result = [];
+    
+    // var rec = function(array) {
+    //   if (array && !Array.isArray(array)) {
+    //     result.push(array);
+    //   }
+    //   if (Array.isArray(array)) {
+    //     var len = array.length;
+    //     for (var i = 0; i < len; ++i) {
+    //       rec(array[i]);
+    //     }
+    //   }
+    // };
+    
+    // rec(nestedArray);
+    // return result;
+
+    return _.reduce(nestedArray, function(accum, index) {
+      var something;
+      if (Array.isArray(index)) {
+        something = _.flatten(index, result);
+      } else {
+        something = index;
+      }
+      return accum.concat(something);
+    }, []);
+     
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
